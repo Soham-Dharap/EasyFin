@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EasyFin — Personal Finance</title>
+<meta name="description" content="EasyFin — fast, private, local-first personal finance for iPhone.">
+<meta name="theme-color" content="#0a1628" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EasyFin">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- Top bar -->
+  <header class="topbar">
+    <button class="avatar-btn" id="profileBtn" aria-label="Profile and settings">
+      <span class="avatar" id="avatarInitial">E</span>
+    </button>
+    <div class="topbar-title">
+      <span class="topbar-eyebrow" id="topEyebrow">Good evening</span>
+      <span class="topbar-sub" id="topSub">Pick up where you left off</span>
+    </div>
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">◐</button>
+  </header>
+
+  <main id="main">
+    <!-- QUICK ADD / HOME -->
+    <section class="view active" id="view-home">
+      <div class="hero-card">
+        <p class="hero-eyebrow">Quick Add</p>
+        <h1 class="hero-title">Add an expense<br><span>in seconds</span></h1>
+        <p class="hero-sub">Amount, what it was for — we handle the rest.</p>
+      </div>
+
+      <div class="quick-card" id="quickCard">
+        <button class="close-x" id="quickClose" aria-label="Close quick add">✕</button>
+        <label class="field-label" for="qaAmount">Amount (₹)</label>
+        <input class="amount-input" id="qaAmount" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0" autocomplete="off">
+        <label class="field-label" for="qaDesc">What was it for?</label>
+        <input class="text-input" id="qaDesc" type="text" placeholder="e.g. McDonald's, Metro, Netflix…" autocomplete="off">
+        <p class="hint" id="qaHint">Category is detected automatically. Unknown items ask you to pick one of 6 categories.</p>
+        <div class="slide" id="qaSlide" data-color="blue">
+          <div class="slide-track"><span class="slide-label">Slide to Add</span></div>
+          <div class="slide-thumb">›</div>
+        </div>
+        <p class="slide-note">Slide fully to save. Use ✕ to discard.</p>
+      </div>
+
+      <div class="today-strip">
+        <h2>Today</h2>
+        <div id="todayList" class="mini-list"><p class="empty">No expenses today yet.</p></div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section class="view" id="view-dashboard">
+      <div class="balance-hero">
+        <p class="hero-eyebrow" id="dashMonthLabel">This month</p>
+        <p class="big-balance" id="dashBalance">₹0</p>
+        <p class="balance-sub">Income − Expenses · current month</p>
+      </div>
+      <div class="duo">
+        <button class="stat-card expense-card" id="dashExpenseCard">
+          <span class="stat-label">Total Expenses</span>
+          <span class="stat-value" id="dashExpenses">₹0</span>
+          <span class="stat-cta">View expenses ›</span>
+        </button>
+        <button class="stat-card income-card" id="dashIncomeCard">
+          <span class="stat-label">Total Income</span>
+          <span class="stat-value" id="dashIncome">₹0</span>
+          <span class="stat-cta">View income ›</span>
+        </button>
+      </div>
+      <div class="card">
+        <h3>At a glance</h3>
+        <div id="dashBreakdown" class="breakdown"></div>
+      </div>
+    </section>
+
+    <!-- BALANCE -->
+    <section class="view" id="view-balance">
+      <div class="balance-hero">
+        <p class="hero-eyebrow">Current month balance</p>
+        <p class="big-balance" id="balValue">₹0</p>
+        <p class="balance-sub" id="balSub">Income − Expenses</p>
+      </div>
+      <div class="card"><h3>This month</h3>
+        <div class="row-between"><span>Income</span><strong id="balIncome">₹0</strong></div>
+        <div class="row-between"><span>Expenses</span><strong id="balExpenses">₹0</strong></div>
+        <div class="row-between total"><span>Net</span><strong id="balNet">₹0</strong></div>
+      </div>
+      <p class="note">Balance always reflects the current calendar month. Use Expenses / Income filters for history.</p>
+    </section>
+
+    <!-- INCOME -->
+    <section class="view" id="view-income">
+      <div class="section-head">
+        <h2>Income</h2>
+        <select id="incomeMonth" class="month-select" aria-label="Month"></select>
+      </div>
+      <div class="chips" id="clientChips"></div>
+      <button class="primary-btn" id="addIncomeBtn">＋ Add Income</button>
+      <button class="ghost-btn" id="addClientBtn">＋ Add Client</button>
+      <div id="incomeList" class="txn-list"></div>
+    </section>
+
+    <!-- EXPENSES -->
+    <section class="view" id="view-expenses">
+      <div class="section-head">
+        <h2>Expenses</h2>
+        <select id="expenseMonth" class="month-select" aria-label="Month"></select>
+      </div>
+      <div class="chips" id="catChips"></div>
+      <button class="ghost-btn" id="openSubsBtn">Subscriptions <span id="subsBadge" class="badge"></span></button>
+      <div id="expenseList" class="txn-list"></div>
+    </section>
+
+    <!-- SUBSCRIPTIONS -->
+    <section class="view" id="view-subs">
+      <div class="section-head"><button class="back-btn" data-go="expenses">‹ Back</button><h2>Subscriptions</h2></div>
+      <div class="duo" id="subsStats"></div>
+      <button class="primary-btn" id="addSubBtn">＋ Add Subscription</button>
+      <div id="subsList" class="txn-list"></div>
+      <div class="card"><h3>Payment history</h3><div id="subPayments"></div></div>
+    </section>
+  </main>
+
+  <!-- Floating nav (Spotify-inspired pill) -->
+  <nav class="dock" aria-label="Main navigation">
+    <button class="dock-btn active" data-view="home"><span class="dock-ico">⌂</span><span>Home</span></button>
+    <button class="dock-btn" data-view="dashboard"><span class="dock-ico">▦</span><span>Dashboard</span></button>
+    <button class="dock-btn" data-view="balance"><span class="dock-ico">◈</span><span>Balance</span></button>
+    <button class="dock-btn" data-view="income"><span class="dock-ico">↗</span><span>Income</span></button>
+    <button class="dock-btn" data-view="expenses"><span class="dock-ico">▤</span><span>Expenses</span></button>
+  </nav>
+
+  <!-- Modals -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+</div>
+<script src="js/db.js"></script>
+<script src="js/categorize.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
